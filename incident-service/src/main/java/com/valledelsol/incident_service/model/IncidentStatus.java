@@ -4,5 +4,4 @@ public enum IncidentStatus {
     PENDING,
     VALIDATED,
     CLOSED
-    
 }
