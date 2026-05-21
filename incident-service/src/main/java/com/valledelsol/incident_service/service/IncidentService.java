@@ -1,10 +1,12 @@
 package com.valledelsol.incident_service.service;
 
 
+import com.valledelsol.incident_service.config.RabbitMQConfig;
 import com.valledelsol.incident_service.model.Incident;
 import com.valledelsol.incident_service.model.IncidentStatus;
 import com.valledelsol.incident_service.repository.IncidentRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -16,8 +18,9 @@ import java.util.Optional;
 public class IncidentService {
 
     private final IncidentRepository incidentRepository;
+    private final RabbitTemplate rabbitTemplate; // Inyectamos la herramienta de RabbitMQ
 
-    // 1. Crear un nuevo reporte
+    // 1. Crear un nuevo reporte 
     public Incident createIncident(Incident incident) {
         if (incident == null) {
             throw new IllegalArgumentException("El incidente no puede ser nulo");
@@ -27,12 +30,12 @@ public class IncidentService {
         return incidentRepository.save(incident);
     }
 
-    // 2. Obtener todos los incidentes
+    // 2. Obtener todos los incidentes 
     public List<Incident> getAllIncidents() {
         return incidentRepository.findAll();
     }
 
-    // 3. Buscar un incidente por ID (Agregamos validación de nulo para limpiar la advertencia 2)
+    // 3. Buscar un incidente por ID 
     public Optional<Incident> getIncidentById(String id) {
         if (id == null) {
             return Optional.empty();
@@ -40,22 +43,35 @@ public class IncidentService {
         return incidentRepository.findById(id);
     }
 
-    // 4. Actualizar estado/coordenadas (Refactorizado para limpiar la advertencia 1)
+    // 4. Actualizar estado/coordenadas de un incidente (usado por el Admin)
     public Incident updateIncident(String id, Double newLat, Double newLng, IncidentStatus newStatus) {
         if (id == null) {
             throw new IllegalArgumentException("El ID no puede ser nulo");
         }
 
-        // Buscamos el incidente primero. Si no existe, lanza la excepción de inmediato.
         Incident incident = incidentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Incidente no encontrado con el ID: " + id));
         
-        // Si existe, modificamos sus campos de forma segura
         if (newLat != null) incident.setLatitude(newLat);
         if (newLng != null) incident.setLongitude(newLng);
         if (newStatus != null) incident.setStatus(newStatus);
         
-        // Guardamos y retornamos
-        return incidentRepository.save(incident);
+        // Guardamos los cambios corregidos por el Admin en MongoDB
+        Incident savedIncident = incidentRepository.save(incident);
+
+        // REGLA DE NEGOCIO: Si el estado cambió a VALIDATED, lanzamos el evento asíncrono
+        if (newStatus == IncidentStatus.VALIDATED) {
+            System.out.println("📢 [RabbitMQ] Despachando incidente validado al exchange...");
+            
+            rabbitTemplate.convertAndSend(
+                RabbitMQConfig.EXCHANGE_NAME, 
+                RabbitMQConfig.ROUTING_KEY, 
+                savedIncident // Spring lo transforma automáticamente a JSON gracias a nuestro convertidor
+            );
+            
+            System.out.println(" [RabbitMQ] Incidente enviado con éxito a la cola de Geo-Service.");
+        }
+        
+        return savedIncident;
     }
 }
