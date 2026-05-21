@@ -61,7 +61,7 @@ public class IncidentService {
 
         // REGLA DE NEGOCIO: Si el estado cambió a VALIDATED, lanzamos el evento asíncrono
         if (newStatus == IncidentStatus.VALIDATED) {
-            System.out.println("📢 [RabbitMQ] Despachando incidente validado al exchange...");
+            System.out.println("[RabbitMQ] Despachando incidente validado al exchange...");
             
             rabbitTemplate.convertAndSend(
                 RabbitMQConfig.EXCHANGE_NAME, 
