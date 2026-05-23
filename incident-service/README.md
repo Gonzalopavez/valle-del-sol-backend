@@ -1,13 +1,13 @@
 
 
-# Incident Service (Microservicio de Incidentes)
+# Incident Service (Microservicio de Incidentes) Corriendo en el puerto 8081
 
 Backend encargado de la captura, persistencia y ciclo de vida de los reportes de emergencias ciudadanas en el proyecto 
 **Valle del Sol**.
 
 ##  Tecnologías Utilizadas
 * **Java 17** y **Spring Boot 3.5.15**
-* **Apache Maven** (Gestor de dependencias)
+* **Apache Maven** (Gestor de dependencias) **3.9.15**
 * **MongoDB** (Base de datos NoSQL para almacenamiento flexible de documentos JSON)
 * **RabbitMQ** (Servidor de mensajería asíncrona para despacho de eventos)
 
@@ -48,7 +48,7 @@ IMPORTANTE: Al cambiar a VALIDATED, este endpoint despacha automáticamente un e
 ##  Instalación y Orden de ejecucion ( PRIMERA FASE ANTES DE IR AL BFF )
 
 ### Paso 1: Levantar la mensajería con Docker
-Abrr una terminal en en el PC (en cualquier ubicación) y encender el contenedor oficial de RabbitMQ:
+Abrir una terminal en en el PC (en cualquier ubicación) y encender el contenedor oficial de RabbitMQ:
 
 docker start rabbitmq
 
