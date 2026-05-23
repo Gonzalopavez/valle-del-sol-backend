@@ -11,6 +11,6 @@ public class IncidentDTO {
     private Double latitude;
     private Double longitude;
     private String imageUrl;
-    private String status; // como String aquí para simplificar el pasamanos
+    private String status; 
     private LocalDateTime createdAt;
 }

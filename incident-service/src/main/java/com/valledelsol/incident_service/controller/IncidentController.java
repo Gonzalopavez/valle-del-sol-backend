@@ -19,7 +19,7 @@ public class IncidentController {
     private final IncidentService incidentService;
 
     // 1. POST - Crear Reporte (US-01: Vecino reporta humo)
-    // URL: POST http://localhost:8081/api/incidents
+    
     @PostMapping
     public ResponseEntity<Incident> createIncident(@RequestBody Incident incident) {
         Incident created = incidentService.createIncident(incident);
@@ -27,7 +27,7 @@ public class IncidentController {
     }
 
     // 2. GET - Obtener todos los reportes (Para el mapa del Administrador)
-    // URL: GET http://localhost:8081/api/incidents
+    
     @GetMapping
     public ResponseEntity<List<Incident>> getAllIncidents() {
         List<Incident> incidents = incidentService.getAllIncidents();
@@ -35,7 +35,7 @@ public class IncidentController {
     }
 
     // 3. GET - Buscar un reporte por su ID
-    // URL: GET http://localhost:8081/api/incidents/{id}
+    
     @GetMapping("/{id}")
     public ResponseEntity<Incident> getIncidentById(@PathVariable String id) {
         return incidentService.getIncidentById(id)
@@ -44,7 +44,7 @@ public class IncidentController {
     }
 
     // 4. PUT - Validar/Modificar Incidente (Fase 3: Admin corrige coordenadas y valida)
-    // URL: PUT http://localhost:8081/api/incidents/{id}
+    
     @PutMapping("/{id}")
     public ResponseEntity<?> updateIncident(
             @PathVariable String id,
