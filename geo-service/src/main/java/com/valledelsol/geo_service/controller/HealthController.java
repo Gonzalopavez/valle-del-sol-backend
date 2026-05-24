@@ -1,20 +1,21 @@
 package com.valledelsol.geo_service.controller;
 
-
-import com.valledelsol.geo_service.dto.ApiResponse;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.Map;
 
 @RestController
+@RequestMapping("/api/v1/health")
 public class HealthController {
 
-    @GetMapping("/ping")
-    public ApiResponse<String> ping() {
-
-        return new ApiResponse<>(
-                true,
-                "Geo Service funcionando correctamente",
-                null
-        );
+    @GetMapping
+    public ResponseEntity<Map<String, Object>> healthCheck() {
+        return ResponseEntity.ok(Map.of(
+            "status", "UP",
+            "service", "geo-service",
+            "message", "Conexión estable"
+        ));
     }
 }
