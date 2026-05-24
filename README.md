@@ -9,7 +9,7 @@
 
   **2.1** Abrir terminal gitbash y ejecutar: docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
       Este comando descarga y levanta RabbitMQ en segundo plano
-  **2.2** Puerto 15672 se encuentra **La consola web visual de RABBITMQ**  http://localhost:15672  
+  **2.2** Puerto 15672 se encuentra **La consola web visual de RABBITMQ**  http://localhost:15672/ 
       (si pide contraseña y usuario, ambos son guest)
 
 3. MongoDB Compass instalado y corriendo (MongoDB corre en el puerto 27017)
