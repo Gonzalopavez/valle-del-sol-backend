@@ -10,8 +10,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class IncidentValidatedEvent {
-    private String incidentId;
+    private String id;          
+    private String description;
+    private Double latitude;
+    private Double longitude;
     private String status;
-    private String validatorName;
-    private String timestamp;
 }

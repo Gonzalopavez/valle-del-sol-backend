@@ -14,7 +14,7 @@
 
 3. MongoDB Compass instalado y corriendo (MongoDB corre en el puerto 27017)
 
-4. BASE DE DATOS FALTANTE
+4. Postgresql instalado y corriendo (Postresql corre en el puerto 5432 )
 
 5. java 17 INSTALADO
 

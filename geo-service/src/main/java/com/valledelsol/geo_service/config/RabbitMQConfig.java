@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitMQConfig {
 
     // ESTAS SON LAS 3 VARIABLES QUE EL COMPILADOR NO ENCUENTRA:
-    public static final String INCIDENT_QUEUE = "incident.validation.queue";
+    public static final String INCIDENT_QUEUE = "geo.incident.queue";
     public static final String INCIDENT_EXCHANGE = "incident.exchange";
     public static final String INCIDENT_ROUTING_KEY = "incident.validated";
 

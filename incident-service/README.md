@@ -20,13 +20,23 @@ Backend encargado de la captura, persistencia y ciclo de vida de los reportes de
 
 Endpoints Principales (API REST):
 
-POST http://localhost:8081/api/incidents : Registra un nuevo incidente enviado por un vecino (Estado inicial: PENDING).
+POST http://localhost:8080/api/bff/incidents : Registra un nuevo incidente enviado por un vecino (Estado inicial: PENDING).
 
-GET  http://localhost:8081/api/incidents : Retorna el listado completo de incidentes guardados en MongoDB.
+{
+  "userId": "vecino_XXX",
+  "description": "fuego en XXXX",
+  "latitude": -36.8269,
+  "longitude": -73.0498,
+  "imageUrl": "https://valle-del-sol-s3.amazonaws.com/fotos/incendio_01.jpg"
+}
 
-GET2 http://localhost:8081/api/incidents/ID : Retorna un reporte por su ID
 
-PUT  http://localhost:8081/api/incidents/ID_DEL_REPORTE?latitude=-11.1111&longitude=-22.2222&status=VALIDATED : Permite al Administrador Municipal corregir coordenadas y actualizar el estado a VALIDATED.
+
+GET  http://localhost:8080/api/bff/incidents : Retorna el listado completo de incidentes guardados en MongoDB.
+
+GET2 http://localhost:8080/api/bff/incidents/ID : Retorna un reporte por su ID
+
+PUT  http://localhost:8080/api/bff/incidents/ID_DEL_REPORTE?latitude=-11.1111&longitude=-22.2222&status=VALIDATED : Permite al Administrador Municipal corregir coordenadas y actualizar el estado a VALIDATED.
 
 
 EN EL PUT DE ARRIBA PUEDES MODIFICAR (ACTULIZAR) LO SIGUIENTE:
