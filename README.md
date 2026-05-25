@@ -1,7 +1,7 @@
 
 ## Comunicacion: corriendo en el puerto 5672, Es el puerto interno que usa springBoot en el codigo para mandar mensajes a RabbitMQ
 
-### PARA LA CORRECTA EJECUCCION DE TODO EL PROYECTO SE REQUIERE TENER LOS SIGUIENTES REQUERIMIENTOS:
+### PARA LA CORRECTA EJECUCCION DE TODO EL PROYECTO SE REQUIERE TENER LOS SIGUIENTES REQUERIMIENTOS IMPORTANTES:
 
 1. dockerDesktop instalado y corriendo
 
