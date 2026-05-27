@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  # 1. Contenedor de la Base de datos MongoDB para Incidentes
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    networks:
+      - valledelsol-network
+
+  # 2. Contenedor de la Base de datos PostgreSQL para Geolocalización
+  postgres-db:
+    image: postgres:latest
+    container_name: postgres-db
+    environment:
+      POSTGRES_DB: geo_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 232312 # Forzamos a que el Postgres de Docker tenga esta clave (NO ES BUENA PRACTICA PROFESIONAL, PERO ES SOLO PARA PRUEBAS LOCALES)
+    ports:
+      - "5432:5432"
+    networks:
+      - valledelsol-network
+
+  # 3. Contenedor del Broker de Mensajería: RabbitMQ
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"     # Puerto de intercambio de datos de Spring
+      - "15672:15672"   # Puerto del panel web de control
+    networks:
+      - valledelsol-network
+
+  # 4. Microservicio de Incidentes
+  incident-service:
+    build: ./incident-service # Busca el Dockerfile en esa carpeta
+    container_name: incident-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mongodb
+      - rabbitmq
+    networks:
+      - valledelsol-network
+
+  # 5. Microservicio de Geolocalización
+  geo-service:
+    build: ./geo-service # Busca el Dockerfile en esa carpeta
+    container_name: geo-service
+    ports:
+      - "8083:8083"
+    environment:
+      - DB_PASSWORD=232312 # Forzamos a que el microservicio de geolocalización use esta clave para conectarse al Postgres de Docker (NO ES BUENA PRACTICA PROFESIONAL, PERO ES SOLO PARA PRUEBAS LOCALES)
+    depends_on:
+      - postgres-db
+      - rabbitmq
+    networks:
+      - valledelsol-network
+
+  # 6. BFF (Punto de entrada único)
+  bff-service:
+    build: ./bff-service # Busca el Dockerfile en esa carpeta
+    container_name: bff-service
+    ports:
+      - "8080:8080"
+    depends_on:
+      - incident-service
+      - geo-service
+    networks:
+      - valledelsol-network
+
+# Red interna virtual para que todos se comuniquen usando sus nombres de servicio
+networks:
+  valledelsol-network:
+    driver: bridge
