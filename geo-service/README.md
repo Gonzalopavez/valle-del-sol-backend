@@ -1,55 +1,45 @@
-# Geo-service (Microservicio de geo) Corriendo en el puerto 8083
 
-Backend encargado de la captura de reportes , busqueda de coordenadas de usuarios cerca del fuego , comparacion de 
-coordenadas de usuarios y coordenadas del reporte y calculo matematica para saber que usarios se encuentran cerca del area del reporte, en el proyecto 
-**Valle del Sol**.
 
-##  Tecnologías Utilizadas
-* **Java 17** y **Spring Boot 3.5.15**
-* **Apache Maven** (Gestor de dependencias) **3.9.15**
-* **PostgreSQL** (Base de datos para guardar usuarios fijos pero TEMPORALES POR EL MOMENTO)
-* **RabbitMQ** (Servidor de mensajería asíncrona para despacho de eventos)
+# Geo-Service (Microservicio de Inteligencia Territorial) — Puerto: 8083
 
-##  Requisitos Previos
-* Tener **Docker Desktop** encendido.
-* Instancia de **postgreSQL** corriendo en el puerto por defecto `5432`.
 
+Componente backend del ecosistema **Valle del Sol** encargado de la  geolocalización y cálculo de perímetros de riesgo. 
+
+Su función principal es procesar las coordenadas en vivo de los ciudadanos, contrastarlas mediante algoritmos matemáticos con los focos de emergencia validados, y determinar qué dispositivos se encuentran dentro del área de peligro para activar protocolos de evacuación.
+
+
+## Tecnologías y Herramientas
+* **Java 17** y **Spring Boot 3.9.15**
+* **PostgreSQL**: Base de datos relacional (SQL) utilizada para la persistencia de las zonas geográficas, cuadrantes de la comuna y registros temporales de ubicación de usuarios.
+* **RabbitMQ**: Bróker de mensajería asíncrona utilizado para consumir eventos del bus de integración en segundo plano.
 
 
 
-Endpoints Principales (API REST):
+## Patrones de Diseño Implementados en este Servicio
 
-POST http://localhost:8083/api/v1/geo/location : ESTO PARA GUARDAR Y SIMULAR LA UBICACION ACTUAL DE USUARIOS
+* **Repository Pattern (Patrón Repositorio):** Implementado mediante Spring Data JPA (`JpaRepository`) para gestionar las operaciones y consultas sobre la base de datos relacional PostgreSQL, aislando la infraestructura SQL de la lógica matemática.
 
 
+* **Data Transfer Object (DTO):** Implementado a través de dos contratos de datos estrictos que no representan tablas físicas, sino mensajes en tránsito:
+
+  1. `IncidentValidatedEvent`: Molde asíncrono para consumir e interpretar el JSON recibido desde RabbitMQ.
+  2. `UserLocationRequest`: Molde síncrono para capturar las coordenadas HTTP enviadas por los dispositivos.
+
+
+
+
+##  Endpoints Principales (API REST)
+
+### 1. Simular / Guardar Ubicación Actual del Usuario (POST)
+* **Ruta nativa:** `http://localhost:8083/api/v1/geo/location` (Vía BFF: `http://localhost:8080/api/bff/geo/location`)
+* **Función:** Captura la posición geográfica en tiempo real enviada por el dispositivo móvil del ciudadano para evaluar su cercanía con zonas de riesgo.
+
+
+* **Cuerpo de la petición (JSON) — *Mapeado en `UserLocationRequest`*:**
+```json
 {
-  "userId": "user_XXX_lugar",
+  "userId": "user_Wacoldo_celular",
   "latitude": -36.7262,
   "longitude": -73.1156,
-  "deviceId": "Samsung-S24"
+  "deviceId": "Iphone17-pro-max"
 }
-
-
-
-
-
-##  Instalación y Orden de ejecucion 
-
-### Paso 1: Levantar la mensajería con Docker
-Abrir una terminal en en el PC (en cualquier ubicación) y encender el contenedor oficial de RabbitMQ:
-
-docker start rabbitmq
-
-### Paso 2: Navegar a la carepta especifica del servicio 
-
-cd geo-service
-
-
-### Paso 3: Limpiar y Compilar código (ESPERAR MENSAJE DE BUILD SUCCESS)
-
-./mvnw clean compile
-
-### Paso 4: Levantar el Microservicio (El microservicio se quedará escuchando de forma activa a RabbitMQ.)
-
-./mvnw spring-boot:run
-

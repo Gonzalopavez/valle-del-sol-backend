@@ -1,77 +1,44 @@
-
-
-# Incident Service (Microservicio de Incidentes) Corriendo en el puerto 8081
-
-Backend encargado de la captura, persistencia y ciclo de vida de los reportes de emergencias ciudadanas en el proyecto 
-**Valle del Sol**.
-
-##  Tecnologías Utilizadas
-* **Java 17** y **Spring Boot 3.5.15**
-* **Apache Maven** (Gestor de dependencias) **3.9.15**
-* **MongoDB** (Base de datos NoSQL para almacenamiento flexible de documentos JSON)
-* **RabbitMQ** (Servidor de mensajería asíncrona para despacho de eventos)
-
-##  Requisitos Previos
-* Tener **Docker Desktop** encendido.
-* Instancia de **MongoDB** corriendo en el puerto por defecto `27017`.
+# Incident Service (Microservicio de Incidentes) — Puerto: 8081
 
 
 
+Componente backend del ecosistema **Valle del Sol** encargado de la captura, persistencia, gestión y ciclo de vida de los reportes de emergencias ciudadanas. 
 
-Endpoints Principales (API REST):
 
-POST http://localhost:8080/api/bff/incidents : Registra un nuevo incidente enviado por un vecino (Estado inicial: PENDING).
 
+Su función principal es procesar las solicitudes de incidentes y, bajo reglas de negocio específicas, notificar de forma reactiva a otros componentes del sistema mediante eventos.
+
+## Tecnologías y Herramientas
+* **Java 17** y **Spring Boot 3.9.15**
+* **MongoDB**: Base de datos NoSQL utilizada para el almacenamiento flexible de los documentos de incidentes en formato JSON.
+* **RabbitMQ**: Bróker de mensajería asíncrona utilizado para el despacho de eventos hacia el bus de integración.
+
+
+##  Patrones de Diseño Implementados en este Servicio
+
+* **Repository Pattern (Patrón Repositorio):** Implementado mediante la interfaz `IncidentRepository` que extiende de `MongoRepository`. Aísla la lógica de acceso a datos NoSQL de las reglas de negocio de la aplicación.
+
+
+* **Data Transfer Object (DTO):** Utilizado para transferir la información de las alertas de manera limpia, desacoplando los modelos de persistencia de MongoDB de los contratos de exposición de la API.
+
+
+* **Publish-Subscribe (Event-Driven):** Integrado mediante `RabbitTemplate`. Cuando un incidente es actualizado al estado `VALIDATED`, el servicio publica un evento asíncrono hacia el Exchange de RabbitMQ, permitiendo que otros servicios reaccionen en segundo plano sin bloquear el flujo principal de la petición.
+
+
+
+## Endpoints Principales (API REST)
+
+> 💡 **Nota de Arquitectura:** Aunque este microservicio expone nativamente sus endpoints en el puerto `8081`, el acceso regular de producción se canaliza centralizado a través del **BFF en el puerto 8080**.
+
+### 1. Registrar una emergencia (POST)
+* **Ruta:** `http://localhost:8081/api/incidents` (Vía BFF: `http://localhost:8080/api/bff/incidents`)
+* **Estado inicial automático:** `PENDING`
+* **Cuerpo de la petición (JSON):**
+```json
 {
-  "userId": "vecino_XXX",
-  "description": "fuego en XXXX",
+  "userId": "vecino_1022",
+  "description": "Fuego en unimarc",
   "latitude": -36.8269,
   "longitude": -73.0498,
-  "imageUrl": "https://valle-del-sol-s3.amazonaws.com/fotos/incendio_01.jpg"
+  "imageUrl": "[https://valle-del-sol-s3.amazonaws.com/fotos/incendio_01.jpg](https://valle-del-sol-s3.amazonaws.com/fotos/incendio_01.jpg)"
 }
-
-
-
-GET  http://localhost:8080/api/bff/incidents : Retorna el listado completo de incidentes guardados en MongoDB.
-
-GET2 http://localhost:8080/api/bff/incidents/ID : Retorna un reporte por su ID
-
-PUT  http://localhost:8080/api/bff/incidents/ID_DEL_REPORTE?latitude=-11.1111&longitude=-22.2222&status=VALIDATED : Permite al Administrador Municipal corregir coordenadas y actualizar el estado a VALIDATED.
-
-
-EN EL PUT DE ARRIBA PUEDES MODIFICAR (ACTULIZAR) LO SIGUIENTE:
-
-ID_DEL_REPORTE
-
-latitude=
-
-longitude=
-
-status=
-
-
-
-IMPORTANTE: Al cambiar a VALIDATED, este endpoint despacha automáticamente un evento JSON a RabbitMQ.
-
-
-
-##  Instalación y Orden de ejecucion ( PRIMERA FASE ANTES DE IR AL BFF )
-
-### Paso 1: Levantar la mensajería con Docker
-Abrir una terminal en en el PC (en cualquier ubicación) y encender el contenedor oficial de RabbitMQ:
-
-docker start rabbitmq
-
-### Paso 2: Navegar a la carepta especifica del servicio 
-
-cd incident-service
-
-
-### Paso 3: Limpiar y Compilar código (ESPERAR MENSAJE DE BUILD SUCCESS)
-
-./mvnw clean compile
-
-### Paso 4: Levantar el Microservicio (El microservicio se quedará escuchando de forma activa en el puerto 8081. NO CERRAR LA TERMINAL PARA MANTENER EL SERVICIO VIVO.)
-
-./mvnw spring-boot:run
-

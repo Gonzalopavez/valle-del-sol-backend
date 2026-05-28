@@ -18,7 +18,9 @@ import java.util.Optional;
 public class IncidentService {
 
     private final IncidentRepository incidentRepository;
-    private final RabbitTemplate rabbitTemplate; // Inyectamos la herramienta de RabbitMQ
+
+    
+    private final RabbitTemplate rabbitTemplate; // herramienta de RabbitMQ
 
     // 1. Crear un nuevo reporte 
     public Incident createIncident(Incident incident) {
@@ -56,10 +58,10 @@ public class IncidentService {
         if (newLng != null) incident.setLongitude(newLng);
         if (newStatus != null) incident.setStatus(newStatus);
         
-        // Guardamos los cambios corregidos por el Admin en MongoDB
+        // Se guardan los cambios corregidos por el Admin en MongoDB
         Incident savedIncident = incidentRepository.save(incident);
 
-        // REGLA DE NEGOCIO: Si el estado cambió a VALIDATED, lanzamos el evento asíncrono
+        // REGLA DE NEGOCIO: Si el estado cambió a VALIDATED, se lanza evento asíncrono
         if (newStatus == IncidentStatus.VALIDATED) {
             System.out.println("[RabbitMQ] Despachando incidente validado al exchange...");
             

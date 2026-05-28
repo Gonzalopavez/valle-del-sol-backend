@@ -15,7 +15,7 @@ public class BffIncidentController {
 
     private final WebClient incidentWebClient;
 
-    // 1. POST: Crear incidente (El vecino reporta)
+    // 1. POST: Crear incidente 
     @PostMapping
     public Mono<IncidentDTO> createIncident(@RequestBody IncidentDTO incidentDTO) {
         return incidentWebClient.post()

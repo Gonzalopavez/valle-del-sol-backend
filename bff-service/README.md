@@ -1,38 +1,21 @@
+# BFF Service (Backend For Frontend) — Puerto: 8080
+
+Este componente actúa como el **orquestador y la puerta de entrada única (API Gateway)** para las aplicaciones del Frontend dentro del ecosistema Valle del Sol. 
 
 
 
+Su función principal en la arquitectura es centralizar las peticiones del cliente y redirigir los flujos HTTP de manera eficiente hacia los microservicios correspondientes del backend.
 
 
-# BFF Service (Backend For Frontend) corriendo en el puerto oficial de entrada para el Frontend server.port=8080
+##  Tecnologías y Herramientas
+* **Java 17** y **Spring Boot 3.9.15**
+* **Spring WebFlux (`WebClient`)**: Implementado para realizar llamadas HTTP reactivas, no bloqueantes y de alto rendimiento hacia la red interna de microservicios.
+* **Lombok**: Para la optimización de código limpio y eliminación de boilerplate en la capa de transferencia de datos.
 
-Componente que actúa como **orquestador y puerta de entrada única** para las aplicaciones del Frontend. Su función principal es centralizar las peticiones del cliente, aislar la topología de la red interna y redirigir los flujos hacia los microservicios correspondientes de manera eficiente y asíncrona.
+##  Patrones de Diseño Implementados en este Servicio
 
-##  Tecnologías Utilizadas
-* **Java 17** y **Spring Boot 3.5.15**
-
-* **Spring WebFlux (`WebClient`)**: Implementado para realizar llamadas HTTP no bloqueantes y de alto rendimiento hacia la red interna de microservicios.
-
-* **Lombok**: Para la optimización de código limpio (DTOs sin boilerplate).
+* **Backend For Frontend (BFF) / API Gateway:** Funciona como un proxy seguro. El frontend solo le habla a este componente en el puerto `8080`, ocultando por completo que los microservicios internos corren en los puertos `8081` y `8083`. Centraliza el punto de contacto y protege la red interna.
 
 
+* **Data Transfer Object (DTO):** Implementado en la capa de controladores para moldear y limpiar los JSON de respuesta, asegurando que el frontend reciba estrictamente los datos optimizados que necesita para renderizar la interfaz.
 
-##  Instalación y Orden de ejecucion ( SEGUNDA FASE DESPUES DE TENER EL INCIDENT_SERVICE CORRIENDO )
-
-### Paso 1: Confirmar servicios internos
-
-Asegúrarse de haber completado la guía de arranque del `incident-service` y que este responda en el puerto `8081` y además
-tener corriendo el contender de RABBITMQ
-
-
-### Paso 2: Navegar a la carpeta del BFF
-
-cd bff-service
-
-
-### Paso 3: Limpiar y Compilar código (ESPERAR MENSAJE DE BUILD SUCCESS)
-
-./mvnw clean compile
-
-### Paso 4: Levantar el Orquestador (bff) (El microservicio se quedará escuchando de forma activa en el puerto 8081. NO CERRAR LA TERMINAL PARA MANTENER EL SERVICIO VIVO.)
-
-./mvnw spring-boot:run

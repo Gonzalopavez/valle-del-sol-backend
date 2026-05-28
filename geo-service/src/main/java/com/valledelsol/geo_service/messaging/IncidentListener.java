@@ -39,9 +39,9 @@ public class IncidentListener {
         
         // Mostramos el resultado en consola
         if (usuariosCercanos.isEmpty()) {
-            System.out.println("❌ No se encontraron usuarios en el radio de peligro.");
+            System.out.println(" No se encontraron usuarios en el radio de peligro.");
         } else {
-            System.out.println("🚨 ¡ALERTA! Se encontraron " + usuariosCercanos.size() + " usuarios cerca:");
+            System.out.println(" ¡ALERTA! Se encontraron " + usuariosCercanos.size() + " usuarios cerca:");
             for (UserLocation user : usuariosCercanos) {
                 System.out.println("   -> Notificar a Usuario ID: " + user.getUserId() + " (Dispositivo: " + user.getDeviceId() + ")");
             }

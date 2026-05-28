@@ -18,7 +18,7 @@ public class IncidentController {
 
     private final IncidentService incidentService;
 
-    // 1. POST - Crear Reporte (US-01: Vecino reporta humo)
+    // 1. POST - Crear Reporte 
     
     @PostMapping
     public ResponseEntity<Incident> createIncident(@RequestBody Incident incident) {
