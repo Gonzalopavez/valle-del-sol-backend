@@ -11,11 +11,22 @@ public class WebClientConfig {
     @Value("${microservice.incident.url}")
     private String incidentServiceUrl;
 
-    // Creamos un cliente web configurado especialmente para apuntar al servicio de incidentes
+    @Value("${microservice.geo.url}")
+    private String geoServiceUrl;
+
+    // Cliente web que apunta al servicio de incidentes
     @Bean
     public WebClient incidentWebClient() {
         return WebClient.builder()
                 .baseUrl(incidentServiceUrl)
+                .build();
+    }
+
+    // Cliente web que apunta al servicio de geolocalización
+    @Bean
+    public WebClient geoWebClient() {
+        return WebClient.builder()
+                .baseUrl(geoServiceUrl)
                 .build();
     }
 }
