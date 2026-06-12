@@ -53,4 +53,13 @@ public class BffIncidentController {
                 .retrieve()
                 .bodyToMono(IncidentDTO.class);
     }
+
+    // 4. DELETE: Cancelar/eliminar incidente
+    @DeleteMapping("/{id}")
+    public Mono<Void> deleteIncident(@PathVariable String id) {
+        return incidentWebClient.delete()
+                .uri("/api/incidents/{id}", id)
+                .retrieve()
+                .bodyToMono(Void.class);
+    }
 }

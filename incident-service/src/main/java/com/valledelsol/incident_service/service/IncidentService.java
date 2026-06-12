@@ -76,4 +76,16 @@ public class IncidentService {
         
         return savedIncident;
     }
+
+
+    // 5. Eliminar un incidente (usado por el Admin al cancelar un reporte falso)
+    public void deleteIncident(String id) {
+        if (id == null) {
+            throw new IllegalArgumentException("El ID no puede ser nulo");
+        }
+        if (!incidentRepository.existsById(id)) {
+            throw new RuntimeException("Incidente no encontrado con el ID: " + id);
+        }
+        incidentRepository.deleteById(id);
+    }
 }
