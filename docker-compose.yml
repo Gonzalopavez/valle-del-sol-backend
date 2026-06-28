@@ -1,4 +1,4 @@
-version: '3.8'
+
 
 services:
   # 1. Contenedor de la Base de datos MongoDB para Incidentes

@@ -27,6 +27,13 @@ public class IncidentService {
         if (incident == null) {
             throw new IllegalArgumentException("El incidente no puede ser nulo");
         }
+
+         // Limite best-effort: maximo 10 reportes por userId.
+        if (incident.getUserId() != null
+                && incidentRepository.countByUserId(incident.getUserId()) >= 10) {
+            throw new IllegalArgumentException(
+                "Has alcanzado el limite de 10 reportes para este usuario.");
+        }
         incident.setStatus(IncidentStatus.PENDING);
         incident.setCreatedAt(LocalDateTime.now());
         return incidentRepository.save(incident);
