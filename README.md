@@ -1,4 +1,4 @@
-# ☀️ Sistema de Gestión de Emergencias - Valle del Sol (Backend) 
+#  Sistema de Gestión de Emergencias - Valle del Sol (Backend) 
 # Patrón Arquitectónico: Microservicios + BFF (Backend For Frontend)
 
 Este repositorio contiene la arquitectura de software del ecosistema backend para el proyecto **Valle del Sol**. La solución está diseñada bajo un enfoque de **Microservicios** distribuidos, utilizando un patrón **BFF (Backend For Frontend)** como puerta de entrada única y (en el puerto 8080) comunicación asíncrona basada en eventos.
