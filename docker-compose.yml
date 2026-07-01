@@ -10,6 +10,23 @@ services:
     networks:
       - valledelsol-network
 
+  mongo-express:
+    image: mongo-express:latest
+    container_name: mongo-express
+    ports:
+      - "8085:8081"
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongodb
+      ME_CONFIG_MONGODB_PORT: "27017"
+      ME_CONFIG_BASICAUTH: "false"
+      ME_CONFIG_MONGODB_URL: "mongodb://mongodb:27017"
+    depends_on:
+      - mongodb
+    networks:
+      - valledelsol-network
+
+
+
   # 2. Contenedor de la Base de datos PostgreSQL para Geolocalización
   postgres-db:
     image: postgres:latest
@@ -20,6 +37,20 @@ services:
       POSTGRES_PASSWORD: 232312 # Forzamos a que el Postgres de Docker tenga esta clave (NO ES BUENA PRACTICA PROFESIONAL, PERO ES SOLO PARA PRUEBAS LOCALES)
     ports:
       - "5432:5432"
+    networks:
+      - valledelsol-network
+
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    ports:
+      - "8086:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    depends_on:
+      - postgres-db
     networks:
       - valledelsol-network
 
