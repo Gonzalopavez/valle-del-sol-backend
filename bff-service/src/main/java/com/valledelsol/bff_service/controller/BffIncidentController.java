@@ -1,7 +1,9 @@
 package com.valledelsol.bff_service.controller;
 
+import com.valledelsol.bff_service.config.RabbitMQConfig;
 import com.valledelsol.bff_service.dto.IncidentDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
@@ -14,18 +16,23 @@ import reactor.core.publisher.Mono;
 public class BffIncidentController {
 
     private final WebClient incidentWebClient;
+    private final RabbitTemplate rabbitTemplate; // Herramienta para publicar en RabbitMQ
 
-    // 1. POST: Crear incidente 
+    // 1. POST: Crear incidente — ahora pasa por RabbitMQ para mayor resiliencia
+    // Si el incident-service o MongoDB están caídos, el reporte queda en la cola
+    // y se procesa cuando vuelvan a estar disponibles
     @PostMapping
-    public Mono<IncidentDTO> createIncident(@RequestBody IncidentDTO incidentDTO) {
-        return incidentWebClient.post()
-                .uri("/api/incidents")
-                .bodyValue(incidentDTO)
-                .retrieve()
-                .bodyToMono(IncidentDTO.class);
+    public Mono<String> createIncident(@RequestBody IncidentDTO incidentDTO) {
+        rabbitTemplate.convertAndSend(
+            RabbitMQConfig.INCIDENT_REPORT_QUEUE,
+            incidentDTO
+        );
+        System.out.println("[BFF - RabbitMQ] Reporte publicado en la cola de resiliencia: "
+            + incidentDTO.getUserId());
+        return Mono.just("Reporte recibido y encolado correctamente.");
     }
 
-    // 2.  GET: Obtener todos los incidentes
+    // 2. GET: Obtener todos los incidentes
     @GetMapping
     public Flux<IncidentDTO> getAllIncidents() {
         return incidentWebClient.get()
@@ -34,14 +41,14 @@ public class BffIncidentController {
                 .bodyToFlux(IncidentDTO.class);
     }
 
-    // 3. S PUT: Validar incidente (El Admin corrige y aprueba)
+    // 3. PUT: Validar incidente (El Admin corrige y aprueba)
     @PutMapping("/{id}")
     public Mono<IncidentDTO> updateIncident(
             @PathVariable String id,
             @RequestParam(required = false) Double latitude,
             @RequestParam(required = false) Double longitude,
             @RequestParam(required = false) String status) {
-        
+
         // Reconstruimos la URL con los parámetros dinámicos que vienen del Frontend
         return incidentWebClient.put()
                 .uri(uriBuilder -> uriBuilder
